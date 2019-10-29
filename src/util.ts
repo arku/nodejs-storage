@@ -35,3 +35,16 @@ export function normalize<T = {}, U = Function>(
 export function objectEntries<T>(obj: {[key: string]: T}): Array<[string, T]> {
   return Object.keys(obj).map(key => [key, obj[key]] as [string, T]);
 }
+
+/**
+ * Return a copy of a string object where the keys are lowercased.
+ * @param obj
+ */
+export function objectKeyToLowerCase<T>(obj: {[key: string]: T}) {
+  return Object.keys(obj).reduce((newObj, currKey) => {
+    // Lowercase the value.
+    const key = currKey.toLowerCase();
+    newObj[key] = obj[currKey];
+    return newObj;
+  }, {} as {[key: string]: T});
+}

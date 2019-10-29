@@ -56,7 +56,7 @@ import {
   DuplexifyConstructor,
 } from '@google-cloud/common/build/src/util';
 const duplexify: DuplexifyConstructor = require('duplexify');
-import {normalize, objectEntries} from './util';
+import {normalize, objectEntries, objectKeyToLowerCase} from './util';
 import {GaxiosError, Headers, request as gaxiosRequest} from 'gaxios';
 
 export type GetExpirationDateResponse = [Date];
@@ -2598,7 +2598,7 @@ class File extends ServiceObject<File> {
       );
     }
 
-    const extensionHeaders = Object.assign({}, config.extensionHeaders);
+    const extensionHeaders = objectKeyToLowerCase(config.extensionHeaders || {});
     const fqdn = new url.URL(config.cname || STORAGE_DOWNLOAD_BASE_URL);
     extensionHeaders.host = fqdn.host;
     if (config.method === 'POST') {
@@ -2612,7 +2612,6 @@ class File extends ServiceObject<File> {
     }
 
     const signedHeaders = Object.keys(extensionHeaders)
-      .map(header => header.toLowerCase())
       .sort()
       .join(';');
 
@@ -3456,11 +3455,6 @@ class File extends ServiceObject<File> {
   private getCanonicalHeaders(headers: http.OutgoingHttpHeaders) {
     // Sort headers by their lowercased names
     const sortedHeaders = objectEntries(headers)
-      // Convert header names to lowercase
-      .map<[string, HeaderValue]>(([headerName, value]) => [
-        headerName.toLowerCase(),
-        value,
-      ])
       .sort((a, b) => a[0].localeCompare(b[0]));
 
     return sortedHeaders
